@@ -9,7 +9,8 @@ class FeedsController < ApplicationController
 
   # called by hub to send info
   def webhook
-    print params.inspect
+    @challenge = params['hub.challenge']
+    render plain: @challenge, status: 200
   end
 
   # GET /feeds/1
