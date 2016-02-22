@@ -1,5 +1,5 @@
 class FeedsController < ApplicationController
-  before_action :set_feed, only: [:show, :edit, :update, :destroy]
+  before_action :set_feed, only: [:show, :edit, :update, :destroy, :webhook]
 
   # GET /feeds
   # GET /feeds.json
@@ -10,6 +10,13 @@ class FeedsController < ApplicationController
   # called by hub to send info
   def webhook
     @challenge = params['hub.challenge']
+
+    Feed.all.each do |feed|
+      Feed.find_or_create_by(id: 0) do |feed|
+        feed.text = request.body.read
+      end
+    end
+
     render plain: @challenge, status: 200
   end
 
