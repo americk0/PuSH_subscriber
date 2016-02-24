@@ -16,6 +16,7 @@ class FeedsController < ApplicationController
   # GET /feeds
   # GET /feeds.json
   def index
+    puts "printing from the feed controller"
     @feeds = Feed.all
   end
 
