@@ -1,19 +1,55 @@
 <p id="notice"><%= notice %></p>
 
-<p>
+<h3>
   <strong>Title:</strong>
   <%= @feed.title %>
-</p>
+</h3>
 
-<p>
-  <strong>Text:</strong>
-  <%= @feed.text %>
-</p>
+<h5>
+  <strong>Feed URL:</strong>
+  <%= @feed.feed_url %>
+</h5>
 
-<p>
-  <strong>Author:</strong>
-  <%= @feed.author %>
-</p>
+<h1>Entries</h1>
+<table>
+  <tr>
+    <th>
+      Id
+    </th>
+    <th>
+      Entry Id
+    </th>
+    <th>
+      Title
+    </th>
+    <th>
+      Author
+    </th>
+    <th>
+      Body
+    </th>
+  </tr>
+  <% @feed.entries.each do |entry| %>
+  <tr>
+    <td>
+      <%= entry.id %>
+    </td>
+    <td>
+      <%= entry.entry_id %>
+    </td>
+    <td>
+      <%= entry.title %>
+    </td>
+    <td>
+      <%= entry.author %>
+    </td>
+    <td>
+      <%= entry.body %>
+    </td>
+  </tr>
+
+  <% end %>
+</table>
 
 <%= link_to 'Edit', edit_feed_path(@feed) %> |
 <%= link_to 'Back', feeds_path %>

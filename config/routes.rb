@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   resources :feeds
 
+  post 'sample' => 'feeds#sample'
+  get 'subscribe' => 'feeds#subscribe'
+
   get 'webhook' => 'feeds#webhook'
   post 'webhook' => 'feeds#webhook'
 

@@ -11,14 +11,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160221223949) do
+ActiveRecord::Schema.define(version: 20160309033502) do
 
-  create_table "feeds", force: :cascade do |t|
+  create_table "entries", force: :cascade do |t|
     t.string   "title"
-    t.text     "text"
     t.string   "author"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text     "body"
+    t.integer  "entry_id"
+    t.integer  "feed_id"
   end
+
+  add_index "entries", ["entry_id"], name: "index_entries_on_entry_id"
+  add_index "entries", ["feed_id"], name: "index_entries_on_feed_id"
+
+  create_table "feeds", force: :cascade do |t|
+    t.string   "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string   "feed_url"
+  end
+
+  add_index "feeds", ["feed_url"], name: "index_feeds_on_feed_url"
 
 end

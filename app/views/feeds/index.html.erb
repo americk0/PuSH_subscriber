@@ -1,13 +1,14 @@
 <p id="notice"><%= notice %></p>
 
+<%= render 'subscribe' %>
+
 <h1>Listing Feeds</h1>
 
 <table>
   <thead>
     <tr>
       <th>Title</th>
-      <th>Text</th>
-      <th>Author</th>
+      <th>Feed URL</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -16,8 +17,7 @@
     <% @feeds.each do |feed| %>
       <tr>
         <td><%= feed.title %></td>
-        <td><%= feed.text %></td>
-        <td><%= feed.author %></td>
+        <td><%= feed.feed_url %></td>
         <td><%= link_to 'Show', feed %></td>
         <td><%= link_to 'Edit', edit_feed_path(feed) %></td>
         <td><%= link_to 'Destroy', feed, method: :delete, data: { confirm: 'Are you sure?' } %></td>

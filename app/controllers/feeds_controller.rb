@@ -4,26 +4,91 @@
 #
 #  id         :integer          not null, primary key
 #  title      :string
-#  text       :text
-#  author     :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  feed_url   :string
 #
 
 class FeedsController < ApplicationController
-  before_action :set_feed, only: [:show, :edit, :update, :destroy, :webhook]
+  before_action :set_feed, only: [:show, :edit, :update, :destroy]
+  skip_before_filter  :verify_authenticity_token # skip token auth
 
   # GET /feeds
   # GET /feeds.json
   def index
-    puts "printing from the feed controller"
     @feeds = Feed.all
+  end
+
+  # subscribes to a hub
+  def subscribe
+    # real
+    # hub:   https://benjamin-watson-senior-seminar.superfeedr.com/
+    # topic: http://benjamin-watson-push-src.herokuapp.com/feed.rss
+
+    # test
+    # hub:   https://benjamin-watson-push-client.herokuapp.com/sample
+    # topic: http://benjamin-watson-push-src.herokuapp.com/feed.rss
+    uri = URI.parse params[:hub]
+    post_params = {
+      'hub.mode' => 'subscribe',
+      'hub.topic' => params[:topic],
+      'hub.callback' => 'http://benjamin-watson-push-client.herokuapp.com/webhook',
+      'hub.verify' => 'sync'
+    }
+    Net::HTTP.post_form uri, post_params
+
+    respond_to do |format|
+      format.html { redirect_to :feeds, notice: 'subscription added' }
+      # format.html { render plain: params.inspect }
+    end
+  end
+
+  def sample
+    puts 'params is: ' + params.inspect
+    respond_to do |format|
+      format.html { render plain: 'good ' + params.inspect }
+    end
   end
 
   # called by hub to send info
   def webhook
     @challenge = params['hub.challenge']
 
+    # setup doc to be a usable Nokogiri object
+    xml = request.body.read
+    xml.gsub!(/\n */, '')
+    doc = Nokogiri::XML(xml)
+    doc.remove_namespaces!
+
+    # ensure doc is a Nokogiri object before continuing
+    unless doc.xpath('.//title')[0].nil?
+
+      # find a feed or create a new one
+      feed_url = doc.xpath('.//feed/status')[0].attribute('feed').value
+      @feed = Feed.find_or_create_by(feed_url: feed_url)
+      @feed.title = doc.xpath('.//feed/title')[0].inner_text
+      @feed.save!
+
+      doc.xpath('.//feed/entry').each do |entry|
+        entry_id = entry.xpath('./id')[0].inner_text
+        @entry = Entry.find_or_create_by(feed_id: @feed.id, entry_id: entry_id)
+        @entry.title = entry.xpath('./title')[0].inner_text
+        @entry.body = entry.xpath('./summary')[0].inner_text
+        @entry.author = entry.xpath('./author/name')[0].inner_text
+        @entry.save!
+      end
+      # titles = doc.xpath('.//entry/title').map do |node|
+      #   node.inner_text
+      # end
+      # puts 'thing: ' + titles.inspect
+
+    else
+      puts 'PROBLEM: rss message empty'
+    end
+
+    respond_to do |format|
+      format.html { render plain: @challenge, status: 200 }
+    end
 
     # Feed.all.each do |feed|
     #   Feed.find_or_create_by(id: 0) do |feed|
@@ -31,7 +96,6 @@ class FeedsController < ApplicationController
     #   end
     # end
 
-    render plain: @challenge, status: 200
   end
 
   # GET /feeds/1
@@ -96,6 +160,6 @@ class FeedsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def feed_params
-      params.require(:feed).permit(:title, :text, :author)
+      params.require(:feed).permit(:title, :feed_url)
     end
 end
