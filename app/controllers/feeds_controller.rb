@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: feeds
+#
+#  id         :integer          not null, primary key
+#  title      :string
+#  text       :text
+#  author     :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 class FeedsController < ApplicationController
   before_action :set_feed, only: [:show, :edit, :update, :destroy, :webhook]
 
@@ -11,11 +23,12 @@ class FeedsController < ApplicationController
   def webhook
     @challenge = params['hub.challenge']
 
-    Feed.all.each do |feed|
-      Feed.find_or_create_by(id: 0) do |feed|
-        feed.text = request.body.read
-      end
-    end
+
+    # Feed.all.each do |feed|
+    #   Feed.find_or_create_by(id: 0) do |feed|
+    #     feed.text = request.body.read
+    #   end
+    # end
 
     render plain: @challenge, status: 200
   end
