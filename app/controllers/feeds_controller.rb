@@ -21,13 +21,6 @@ class FeedsController < ApplicationController
 
   # subscribes to a hub
   def subscribe
-    # real
-    # hub:   https://benjamin-watson-senior-seminar.superfeedr.com/
-    # topic: http://benjamin-watson-push-src.herokuapp.com/feed.rss
-
-    # test
-    # hub:   https://benjamin-watson-push-client.herokuapp.com/sample
-    # topic: http://benjamin-watson-push-src.herokuapp.com/feed.rss
     uri = URI.parse params[:hub]
     post_params = {
       'hub.mode' => 'subscribe',
@@ -39,7 +32,6 @@ class FeedsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to :feeds, notice: 'subscription added' }
-      # format.html { render plain: params.inspect }
     end
   end
 
@@ -50,7 +42,7 @@ class FeedsController < ApplicationController
     end
   end
 
-  # called by hub to send info
+  # called by hub to send RSS
   def webhook
     @challenge = params['hub.challenge']
 
@@ -77,10 +69,6 @@ class FeedsController < ApplicationController
         @entry.author = entry.xpath('./author/name')[0].inner_text
         @entry.save!
       end
-      # titles = doc.xpath('.//entry/title').map do |node|
-      #   node.inner_text
-      # end
-      # puts 'thing: ' + titles.inspect
 
     else
       puts 'PROBLEM: rss message empty'
@@ -89,12 +77,6 @@ class FeedsController < ApplicationController
     respond_to do |format|
       format.html { render plain: @challenge, status: 200 }
     end
-
-    # Feed.all.each do |feed|
-    #   Feed.find_or_create_by(id: 0) do |feed|
-    #     feed.text = request.body.read
-    #   end
-    # end
 
   end
 

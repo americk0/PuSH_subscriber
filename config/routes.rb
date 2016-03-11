@@ -1,10 +1,12 @@
 Rails.application.routes.draw do
   resources :feeds
 
-  post 'sample' => 'feeds#sample'
   get 'subscribe' => 'feeds#subscribe'
 
+  # this is for when the hub sends a GET request containing the hub challenge
   get 'webhook' => 'feeds#webhook'
+
+  # this is for when the hub sends a POST request containing the new RSS data
   post 'webhook' => 'feeds#webhook'
 
   # The priority is based upon order of creation: first created -> highest priority.
