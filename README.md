@@ -170,4 +170,6 @@ respond_to do |format|
 end
 ```
 
+* Note also that unlike the cURL command above, this post request doesn't use the "hub.verify" => "sync". This is because for some reason, superfeedr complains when that part is specified when the post request is sent from this button. I don't know why but leaving it out has fixed the issue in many cases
+
 * Now all you will need to do is change any urls in this tutorial to the urls for your app and you should be finished.
