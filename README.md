@@ -162,7 +162,6 @@ post_params = {
   'hub.mode' => 'subscribe',
   'hub.topic' => params[:topic],
   'hub.callback' => 'http://benjamin-watson-push-client.herokuapp.com/webhook',
-  'hub.verify' => 'sync'
 }
 Net::HTTP.post_form uri, post_params
 
